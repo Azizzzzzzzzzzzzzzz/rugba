@@ -1,12 +1,582 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RUGBA CMS</title>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RUGBA — Rugby News</title>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Noto+Kufi+Arabic:wght@400;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00C853;
+    --dark: #0a0a0a;
+    --mid: #141414;
+    --card: #1a1a1a;
+    --border: #2a2a2a;
+    --white: #f0f0f0;
+    --muted: #888;
+    --accent: #FFD600;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    overflow-x: hidden;
+  }
+
+  body.ar { font-family: 'Noto Kufi Arabic', sans-serif; direction: rtl; }
+
+  /* Language switching */
+  .en-content { display: block; }
+  .ar-content { display: none; }
+  body.ar .en-content { display: none; }
+  body.ar .ar-content { display: block; }
+  span.en-content { display: inline; }
+  span.ar-content { display: none; }
+  body.ar span.en-content { display: none; }
+  body.ar span.ar-content { display: inline; }
+
+  /* ─── LANG BAR ─── */
+  .lang-bar {
+    background: var(--green);
+    padding: 6px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    align-items: center;
+  }
+  .lang-btn {
+    background: transparent;
+    border: 2px solid var(--dark);
+    color: var(--dark);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 16px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all .2s;
+  }
+  .lang-btn.ar-btn { font-family: 'Noto Kufi Arabic', sans-serif; letter-spacing: 0; }
+  .lang-btn.active, .lang-btn:hover { background: var(--dark); color: var(--green); }
+
+  /* ─── HEADER ─── */
+  header {
+    background: var(--mid);
+    border-bottom: 3px solid var(--green);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo { font-family: 'Bebas Neue', cursive; font-size: 52px; letter-spacing: 4px; line-height: 1; }
+  .logo span { color: var(--green); }
+  nav { display: flex; gap: 28px; align-items: center; }
+  nav a {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600; font-size: 15px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s;
+  }
+  body.ar nav a { font-family: 'Noto Kufi Arabic', sans-serif; letter-spacing: 0; text-transform: none; font-size: 15px; }
+  nav a:hover, nav a.active { color: var(--green); }
+
+  /* ─── HERO ─── */
+  .hero { position: relative; height: 560px; overflow: hidden; display: flex; align-items: flex-end; }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, #0a0a0a 0%, transparent 60%), linear-gradient(135deg, #001a0a 0%, #0a1a0a 50%, #0a0a1a 100%);
+  }
+  .hero-pattern {
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(0,200,83,0.04) 60px, rgba(0,200,83,0.04) 61px),
+      repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(0,200,83,0.04) 60px, rgba(0,200,83,0.04) 61px);
+  }
+  .hero-ball {
+    position: absolute; right: -60px; top: 50%;
+    transform: translateY(-50%) rotate(25deg);
+    font-size: 380px; opacity: 0.06; user-select: none;
+    animation: float 6s ease-in-out infinite;
+  }
+  body.ar .hero-ball { right: auto; left: -60px; }
+  @keyframes float {
+    0%, 100% { transform: translateY(-50%) rotate(25deg); }
+    50% { transform: translateY(-54%) rotate(28deg); }
+  }
+  .hero-content { position: relative; z-index: 2; padding: 0 40px 50px; max-width: 800px; }
+  body.ar .hero-content { text-align: right; }
+
+  .hero-tag {
+    display: inline-block; background: var(--green); color: var(--dark);
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 11px;
+    letter-spacing: 3px; text-transform: uppercase; padding: 4px 12px; margin-bottom: 16px;
+  }
+  body.ar .hero-tag { font-family: 'Noto Kufi Arabic', sans-serif; letter-spacing: 0; font-size: 13px; text-transform: none; }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', cursive; font-size: clamp(48px, 6vw, 88px);
+    line-height: 0.95; letter-spacing: 2px; margin-bottom: 20px;
+  }
+  body.ar .hero h1 { font-family: 'Noto Kufi Arabic', sans-serif; font-size: clamp(36px,5vw,72px); font-weight: 900; line-height: 1.2; letter-spacing: 0; }
+
+  .hero-meta { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .hero-meta span { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+  body.ar .hero-meta span { font-family: 'Noto Kufi Arabic', sans-serif; letter-spacing: 0; text-transform: none; }
+  .hero-meta .dot { color: var(--green); }
+
+  .read-btn {
+    background: var(--green); color: var(--dark); border: none;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px;
+    letter-spacing: 2px; text-transform: uppercase; padding: 10px 24px; cursor: pointer;
+    transition: all .2s; margin-top: 20px; display: inline-block;
+  }
+  body.ar .read-btn { font-family: 'Noto Kufi Arabic', sans-serif; letter-spacing: 0; text-transform: none; }
+  .read-btn:hover { background: var(--accent); }
+
+  /* ─── TICKER ─── */
+  .ticker { background: var(--green); padding: 10px 0; overflow: hidden; white-space: nowrap; }
+  .ticker-track {
+    display: inline-block; animation: tick 28s linear infinite;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 13px; letter-spacing: 2px; color: var(--dark); text-transform: uppercase;
+  }
+  body.ar .ticker-track { font-family: 'Noto Kufi Arabic', sans-serif; letter-spacing: 0; text-transform: none; }
+  .ticker-track span { margin: 0 40px; }
+  .ticker-track .sep { color: rgba(0,0,0,0.3); margin: 0 10px; }
+  @keyframes tick { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ─── MAIN GRID ─── */
+  .main-grid { max-width: 1280px; margin: 0 auto; padding: 50px 40px; display: grid; grid-template-columns: 1fr 340px; gap: 40px; }
+
+  /* ─── SECTION HEAD ─── */
+  .section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 14px; }
+  .section-head h2 { font-family: 'Bebas Neue', cursive; font-size: 28px; letter-spacing: 2px; white-space: nowrap; }
+  body.ar .section-head h2 { font-family: 'Noto Kufi Arabic', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: 0; }
+  .section-line { flex: 1; height: 2px; background: linear-gradient(to right, var(--green), transparent); }
+  body.ar .section-line { background: linear-gradient(to left, var(--green), transparent); }
+
+  /* ─── NEWS GRID ─── */
+  .news-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .news-card { background: var(--card); border: 1px solid var(--border); overflow: hidden; cursor: pointer; transition: transform .3s, border-color .3s; }
+  .news-card:hover { transform: translateY(-4px); border-color: var(--green); }
+  .news-card.featured { grid-column: 1/-1; display: grid; grid-template-columns: 1fr 1fr; }
+  .card-img { height: 200px; overflow: hidden; }
+  .news-card.featured .card-img { height: 100%; min-height: 260px; }
+  .card-img-inner { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 80px; transition: transform .4s; }
+  .news-card:hover .card-img-inner { transform: scale(1.05); }
+  .card-img-inner.green { background: linear-gradient(135deg,#001a0a,#003318); }
+  .card-img-inner.dark  { background: linear-gradient(135deg,#0a0a1a,#1a0a2a); }
+  .card-img-inner.gold  { background: linear-gradient(135deg,#1a1000,#2a1a00); }
+  .card-body { padding: 20px; }
+  .card-tag { font-family: 'Barlow Condensed',sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--green); margin-bottom: 8px; }
+  body.ar .card-tag { font-family: 'Noto Kufi Arabic',sans-serif; letter-spacing: 0; text-transform: none; font-size: 12px; }
+  .card-title { font-family: 'Barlow Condensed',sans-serif; font-weight: 700; font-size: 20px; line-height: 1.2; margin-bottom: 10px; }
+  body.ar .card-title { font-family: 'Noto Kufi Arabic',sans-serif; font-size: 18px; line-height: 1.5; }
+  .card-excerpt { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+  body.ar .card-excerpt { font-family: 'Noto Kufi Arabic',sans-serif; line-height: 1.8; }
+  .card-meta { display: flex; justify-content: space-between; font-family: 'Barlow Condensed',sans-serif; font-size: 11px; letter-spacing: 1px; color: #555; text-transform: uppercase; border-top: 1px solid var(--border); padding-top: 12px; }
+  body.ar .card-meta { font-family: 'Noto Kufi Arabic',sans-serif; letter-spacing: 0; text-transform: none; font-size: 12px; }
+
+  /* ─── MATCHES ─── */
+  .match-card { background: var(--card); border: 1px solid var(--border); padding: 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; cursor: pointer; transition: border-color .2s; }
+  .match-card:hover { border-color: var(--green); }
+  .match-team { flex: 1; text-align: center; font-family: 'Barlow Condensed',sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 1px; }
+  .match-score { font-family: 'Bebas Neue',cursive; font-size: 28px; color: var(--green); letter-spacing: 2px; }
+  .match-label { text-align: center; font-family: 'Barlow Condensed',sans-serif; font-size: 10px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+  body.ar .match-label { font-family: 'Noto Kufi Arabic',sans-serif; letter-spacing: 0; text-transform: none; }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar { display: flex; flex-direction: column; gap: 30px; }
+  .widget { background: var(--card); border: 1px solid var(--border); overflow: hidden; }
+  .widget-head { background: var(--green); padding: 12px 16px; font-family: 'Bebas Neue',cursive; font-size: 20px; letter-spacing: 2px; color: var(--dark); }
+  body.ar .widget-head { font-family: 'Noto Kufi Arabic',sans-serif; font-size: 16px; font-weight: 900; letter-spacing: 0; }
+
+  .standings-table { width: 100%; border-collapse: collapse; }
+  .standings-table th { font-family: 'Barlow Condensed',sans-serif; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 8px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+  body.ar .standings-table th { font-family: 'Noto Kufi Arabic',sans-serif; text-align: right; letter-spacing: 0; text-transform: none; }
+  .standings-table td { padding: 10px 16px; font-family: 'Barlow Condensed',sans-serif; font-size: 14px; border-bottom: 1px solid var(--border); }
+  body.ar .standings-table td { font-family: 'Noto Kufi Arabic',sans-serif; text-align: right; }
+  .standings-table tr:last-child td { border-bottom: none; }
+  .standings-table tr:hover td { background: rgba(0,200,83,0.05); }
+  .rank { color: var(--muted); }
+  .pts { color: var(--green); font-weight: 700; }
+
+  .upcoming-item { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  .upcoming-item:last-child { border-bottom: none; }
+  .upcoming-comp { font-family: 'Barlow Condensed',sans-serif; font-size: 11px; letter-spacing: 1px; color: var(--green); text-transform: uppercase; margin-bottom: 6px; }
+  body.ar .upcoming-comp { font-family: 'Noto Kufi Arabic',sans-serif; letter-spacing: 0; text-transform: none; font-size: 12px; }
+  .upcoming-teams { font-family: 'Barlow Condensed',sans-serif; font-size: 16px; font-weight: 700; }
+  body.ar .upcoming-teams { font-family: 'Noto Kufi Arabic',sans-serif; font-size: 15px; }
+
+  .newsletter-body { padding: 20px; }
+  .newsletter-body p { font-size: 13px; color: var(--muted); margin-bottom: 14px; line-height: 1.6; }
+  body.ar .newsletter-body p { font-family: 'Noto Kufi Arabic',sans-serif; line-height: 1.8; }
+  .newsletter-body input { width: 100%; background: var(--dark); border: 1px solid var(--border); color: var(--white); padding: 10px 14px; font-size: 14px; margin-bottom: 10px; outline: none; }
+  .newsletter-body button { width: 100%; background: var(--green); color: var(--dark); border: none; font-family: 'Bebas Neue',cursive; font-size: 18px; letter-spacing: 2px; padding: 10px; cursor: pointer; transition: background .2s; }
+  body.ar .newsletter-body button { font-family: 'Noto Kufi Arabic',sans-serif; font-size: 16px; font-weight: 900; letter-spacing: 0; }
+  .newsletter-body button:hover { background: var(--accent); }
+
+  /* ─── VIDEOS ─── */
+  .video-section { max-width: 1280px; margin: 0 auto 50px; padding: 0 40px; }
+  .video-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+  .video-card { background: var(--card); border: 1px solid var(--border); overflow: hidden; cursor: pointer; transition: border-color .3s; }
+  .video-card:hover { border-color: var(--green); }
+  .video-thumb { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 60px; position: relative; }
+  .video-thumb.v1 { background: linear-gradient(135deg,#001a0a,#004d1a); }
+  .video-thumb.v2 { background: linear-gradient(135deg,#0a0a1a,#1a1a4a); }
+  .video-thumb.v3 { background: linear-gradient(135deg,#1a0a00,#4a2000); }
+  .play-btn { position: absolute; width: 50px; height: 50px; background: rgba(0,200,83,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: transform .2s; }
+  .video-card:hover .play-btn { transform: scale(1.1); }
+  .video-body { padding: 14px; }
+  .video-title { font-family: 'Barlow Condensed',sans-serif; font-weight: 700; font-size: 16px; }
+  body.ar .video-title { font-family: 'Noto Kufi Arabic',sans-serif; font-size: 15px; }
+
+  /* ─── FOOTER ─── */
+  footer { background: var(--mid); border-top: 3px solid var(--green); padding: 40px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; }
+  .footer-logo { font-family: 'Bebas Neue',cursive; font-size: 48px; letter-spacing: 4px; margin-bottom: 10px; }
+  .footer-logo span { color: var(--green); }
+  .footer-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  body.ar .footer-desc { font-family: 'Noto Kufi Arabic',sans-serif; line-height: 1.8; }
+  .footer-col h4 { font-family: 'Bebas Neue',cursive; font-size: 20px; letter-spacing: 2px; color: var(--green); margin-bottom: 16px; }
+  body.ar .footer-col h4 { font-family: 'Noto Kufi Arabic',sans-serif; font-weight: 900; letter-spacing: 0; font-size: 18px; }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 10px; font-family: 'Barlow Condensed',sans-serif; font-size: 14px; letter-spacing: 1px; color: var(--muted); cursor: pointer; transition: color .2s; }
+  body.ar .footer-col ul li { font-family: 'Noto Kufi Arabic',sans-serif; letter-spacing: 0; }
+  .footer-col ul li:hover { color: var(--white); }
+
+  .footer-bottom { background: #050505; padding: 16px 40px; display: flex; justify-content: space-between; font-family: 'Barlow Condensed',sans-serif; font-size: 12px; letter-spacing: 1px; color: #444; text-transform: uppercase; }
+  body.ar .footer-bottom { font-family: 'Noto Kufi Arabic',sans-serif; letter-spacing: 0; text-transform: none; }
+
+  /* ─── REVEAL ─── */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s, transform .6s; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .news-card.featured { grid-template-columns: 1fr; }
+    .video-grid { grid-template-columns: 1fr 1fr; }
+    footer { grid-template-columns: 1fr; }
+    header, .main-grid, .video-section { padding-left: 20px; padding-right: 20px; }
+  }
+</style>
 </head>
 <body>
-  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+
+<!-- LANG BAR -->
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+  <button class="lang-btn ar-btn" onclick="setLang('ar',this)">عربي</button>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">RUG<span>BA</span></div>
+  <nav>
+    <a href="#" class="active">
+      <span class="en-content">News</span><span class="ar-content">الأخبار</span>
+    </a>
+    <a href="#">
+      <span class="en-content">Matches</span><span class="ar-content">المباريات</span>
+    </a>
+    <a href="#">
+      <span class="en-content">Teams</span><span class="ar-content">الفرق</span>
+    </a>
+    <a href="#">
+      <span class="en-content">World Cup</span><span class="ar-content">كأس العالم</span>
+    </a>
+    <a href="#">
+      <span class="en-content">Videos</span><span class="ar-content">فيديو</span>
+    </a>
+    <a href="#">
+      <span class="en-content">Shop</span><span class="ar-content">المتجر</span>
+    </a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-pattern"></div>
+  <div class="hero-ball">🏉</div>
+  <div class="hero-content">
+    <div class="hero-tag">
+      <span class="en-content">Breaking News</span>
+      <span class="ar-content">خبر عاجل</span>
+    </div>
+    <h1>
+      <span class="en-content">New Zealand Clinches<br>Six Nations Title</span>
+      <span class="ar-content">نيوزيلندا تحسم<br>لقب بطولة الست أمم</span>
+    </h1>
+    <div class="hero-meta">
+      <span><span class="en-content">World Rugby</span><span class="ar-content">رغبي العالم</span></span>
+      <span class="dot">●</span>
+      <span>Mar 11, 2026</span>
+      <span class="dot">●</span>
+      <span><span class="en-content">5 min read</span><span class="ar-content">5 دقائق</span></span>
+    </div>
+    <button class="read-btn">
+      <span class="en-content">Read Full Story →</span>
+      <span class="ar-content">← اقرأ القصة كاملة</span>
+    </button>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span><span class="en-content">🏉 All Blacks defeat France 34–18</span><span class="ar-content">🏉 الأولبيين يهزمون فرنسا 34–18</span></span>
+    <span class="sep">|</span>
+    <span><span class="en-content">🏆 World Cup 2027 tickets on sale now</span><span class="ar-content">🏆 تذاكر كأس العالم 2027 متاحة الآن</span></span>
+    <span class="sep">|</span>
+    <span><span class="en-content">🌍 South Africa ranked #1 worldwide</span><span class="ar-content">🌍 جنوب أفريقيا الأولى عالمياً</span></span>
+    <span class="sep">|</span>
+    <span><span class="en-content">🏉 All Blacks defeat France 34–18</span><span class="ar-content">🏉 الأولبيين يهزمون فرنسا 34–18</span></span>
+    <span class="sep">|</span>
+    <span><span class="en-content">🏆 World Cup 2027 tickets on sale now</span><span class="ar-content">🏆 تذاكر كأس العالم 2027 متاحة الآن</span></span>
+    <span class="sep">|</span>
+    <span><span class="en-content">🌍 South Africa ranked #1 worldwide</span><span class="ar-content">🌍 جنوب أفريقيا الأولى عالمياً</span></span>
+    <span class="sep">|</span>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main-grid">
+  <div>
+    <div class="section-head reveal">
+      <h2><span class="en-content">LATEST NEWS</span><span class="ar-content">آخر الأخبار</span></h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="news-grid">
+      <div class="news-card featured reveal">
+        <div class="card-img"><div class="card-img-inner green">🏉</div></div>
+        <div class="card-body">
+          <div class="card-tag"><span class="en-content">World Cup 2027</span><span class="ar-content">كأس العالم 2027</span></div>
+          <div class="card-title">
+            <span class="en-content">Australia Confirms 10 Host Cities for Rugby World Cup 2027</span>
+            <span class="ar-content">أستراليا تؤكد 10 مدن مضيفة لكأس العالم للرغبي 2027</span>
+          </div>
+          <div class="card-excerpt">
+            <span class="en-content">Rugby Australia has officially announced the ten cities hosting the 2027 World Cup, with Sydney's Stadium Australia set for the grand final.</span>
+            <span class="ar-content">أعلنت أستراليا رسمياً عن المدن العشر التي ستستضيف كأس العالم 2027، مع استاد أستراليا في سيدني كملعب للنهائي الكبير.</span>
+          </div>
+          <div class="card-meta"><span>World Rugby</span><span>Mar 10, 2026</span></div>
+        </div>
+      </div>
+
+      <div class="news-card reveal">
+        <div class="card-img"><div class="card-img-inner dark">🦁</div></div>
+        <div class="card-body">
+          <div class="card-tag"><span class="en-content">Six Nations</span><span class="ar-content">الست أمم</span></div>
+          <div class="card-title">
+            <span class="en-content">England Beat Ireland in Thrilling Dublin Clash</span>
+            <span class="ar-content">إنجلترا تهزم أيرلندا في دبلن</span>
+          </div>
+          <div class="card-excerpt">
+            <span class="en-content">A late penalty secured England a dramatic 24–21 victory at the Aviva Stadium.</span>
+            <span class="ar-content">ركلة جزاء متأخرة تمنح إنجلترا فوزاً درامياً 24–21 في ملعب أفيفا.</span>
+          </div>
+          <div class="card-meta"><span>Six Nations</span><span>Mar 9, 2026</span></div>
+        </div>
+      </div>
+
+      <div class="news-card reveal">
+        <div class="card-img"><div class="card-img-inner gold">🏆</div></div>
+        <div class="card-body">
+          <div class="card-tag"><span class="en-content">Transfer</span><span class="ar-content">انتقالات</span></div>
+          <div class="card-title">
+            <span class="en-content">Springboks Star Signs Record Contract with Lions</span>
+            <span class="ar-content">نجم سبرينغبوكس يوقع عقداً قياسياً مع الأسود</span>
+          </div>
+          <div class="card-excerpt">
+            <span class="en-content">The World Cup winner joins the British & Irish Lions on a record-breaking three-year deal.</span>
+            <span class="ar-content">بطل كأس العالم ينضم إلى الأسود البريطانية والأيرلندية بعقد ثلاث سنوات قياسي.</span>
+          </div>
+          <div class="card-meta">
+            <span><span class="en-content">Transfers</span><span class="ar-content">انتقالات</span></span>
+            <span>Mar 8, 2026</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head reveal" style="margin-top:40px">
+      <h2><span class="en-content">RECENT MATCHES</span><span class="ar-content">نتائج المباريات</span></h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="reveal">
+      <div class="match-card">
+        <div class="match-team">🇳🇿 NZL</div>
+        <div style="flex:2;text-align:center">
+          <div class="match-score">34 — 18</div>
+          <div class="match-label"><span class="en-content">Six Nations · Mar 8</span><span class="ar-content">الست أمم · 8 مارس</span></div>
+        </div>
+        <div class="match-team">FRA 🇫🇷</div>
+      </div>
+      <div class="match-card">
+        <div class="match-team">🏴󠁧󠁢󠁥󠁮󠁧󠁿 ENG</div>
+        <div style="flex:2;text-align:center">
+          <div class="match-score">24 — 21</div>
+          <div class="match-label"><span class="en-content">Six Nations · Mar 9</span><span class="ar-content">الست أمم · 9 مارس</span></div>
+        </div>
+        <div class="match-team">IRE 🇮🇪</div>
+      </div>
+      <div class="match-card">
+        <div class="match-team">🇿🇦 RSA</div>
+        <div style="flex:2;text-align:center">
+          <div class="match-score">41 — 10</div>
+          <div class="match-label"><span class="en-content">Rugby Championship · Mar 7</span><span class="ar-content">بطولة الرغبي · 7 مارس</span></div>
+        </div>
+        <div class="match-team">ARG 🇦🇷</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="widget reveal">
+      <div class="widget-head"><span class="en-content">WORLD RANKINGS</span><span class="ar-content">التصنيف العالمي</span></div>
+      <table class="standings-table">
+        <thead><tr>
+          <th>#</th>
+          <th><span class="en-content">Team</span><span class="ar-content">الفريق</span></th>
+          <th>Pts</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="rank">1</td><td>🇿🇦 <span class="en-content">South Africa</span><span class="ar-content">جنوب أفريقيا</span></td><td class="pts">94.67</td></tr>
+          <tr><td class="rank">2</td><td>🇳🇿 <span class="en-content">New Zealand</span><span class="ar-content">نيوزيلندا</span></td><td class="pts">92.13</td></tr>
+          <tr><td class="rank">3</td><td>🇮🇪 <span class="en-content">Ireland</span><span class="ar-content">أيرلندا</span></td><td class="pts">91.45</td></tr>
+          <tr><td class="rank">4</td><td>🏴󠁧󠁢󠁥󠁮󠁧󠁿 <span class="en-content">England</span><span class="ar-content">إنجلترا</span></td><td class="pts">86.22</td></tr>
+          <tr><td class="rank">5</td><td>🇫🇷 <span class="en-content">France</span><span class="ar-content">فرنسا</span></td><td class="pts">85.90</td></tr>
+          <tr><td class="rank">6</td><td>🇦🇺 <span class="en-content">Australia</span><span class="ar-content">أستراليا</span></td><td class="pts">83.11</td></tr>
+          <tr><td class="rank">7</td><td>🏴󠁧󠁢󠁳󠁣󠁴󠁿 <span class="en-content">Scotland</span><span class="ar-content">اسكتلندا</span></td><td class="pts">81.44</td></tr>
+          <tr><td class="rank">8</td><td>🇦🇷 <span class="en-content">Argentina</span><span class="ar-content">الأرجنتين</span></td><td class="pts">80.33</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="en-content">UPCOMING MATCHES</span><span class="ar-content">المباريات القادمة</span></div>
+      <div class="upcoming-item">
+        <div class="upcoming-comp"><span class="en-content">Mar 15 · Six Nations</span><span class="ar-content">15 مارس · الست أمم</span></div>
+        <div class="upcoming-teams"><span class="en-content">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales vs Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿</span><span class="ar-content">🏴󠁧󠁢󠁷󠁬󠁳󠁿 ويلز ضد اسكتلندا 🏴󠁧󠁢󠁳󠁣󠁴󠁿</span></div>
+      </div>
+      <div class="upcoming-item">
+        <div class="upcoming-comp"><span class="en-content">Mar 16 · Six Nations</span><span class="ar-content">16 مارس · الست أمم</span></div>
+        <div class="upcoming-teams"><span class="en-content">🇮🇹 Italy vs France 🇫🇷</span><span class="ar-content">🇮🇹 إيطاليا ضد فرنسا 🇫🇷</span></div>
+      </div>
+      <div class="upcoming-item">
+        <div class="upcoming-comp"><span class="en-content">Mar 22 · Rugby Championship</span><span class="ar-content">22 مارس · بطولة الرغبي</span></div>
+        <div class="upcoming-teams"><span class="en-content">🇳🇿 New Zealand vs Australia 🇦🇺</span><span class="ar-content">🇳🇿 نيوزيلندا ضد أستراليا 🇦🇺</span></div>
+      </div>
+    </div>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="en-content">NEWSLETTER</span><span class="ar-content">النشرة البريدية</span></div>
+      <div class="newsletter-body">
+        <p><span class="en-content">Get daily rugby news delivered to your inbox.</span><span class="ar-content">احصل على أخبار الرغبي يومياً في بريدك الإلكتروني.</span></p>
+        <input type="email" placeholder="your@email.com">
+        <button><span class="en-content">SUBSCRIBE</span><span class="ar-content">اشترك الآن</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEOS -->
+<div class="video-section">
+  <div class="section-head reveal">
+    <h2><span class="en-content">VIDEOS</span><span class="ar-content">الفيديوهات</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="video-grid">
+    <div class="video-card reveal">
+      <div class="video-thumb v1">🏉<div class="play-btn">▶</div></div>
+      <div class="video-body"><div class="video-title"><span class="en-content">Top 10 Tries of the Month</span><span class="ar-content">أفضل 10 تسجيلات في الشهر</span></div></div>
+    </div>
+    <div class="video-card reveal">
+      <div class="video-thumb v2">🎯<div class="play-btn">▶</div></div>
+      <div class="video-body"><div class="video-title"><span class="en-content">Rugby Basics for Beginners</span><span class="ar-content">أساسيات الرغبي للمبتدئين</span></div></div>
+    </div>
+    <div class="video-card reveal">
+      <div class="video-thumb v3">🏆<div class="play-btn">▶</div></div>
+      <div class="video-body"><div class="video-title"><span class="en-content">World Cup 2027 Preview</span><span class="ar-content">معاينة كأس العالم 2027</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">RUG<span>BA</span></div>
+    <div class="footer-desc">
+      <span class="en-content">The home of rugby in Arabic and English. News, scores, analysis and more.</span>
+      <span class="ar-content">البيت العربي للرغبي. أخبار، نتائج، تحليلات وأكثر.</span>
+    </div>
+  </div>
+  <div class="footer-col">
+    <h4><span class="en-content">SECTIONS</span><span class="ar-content">الأقسام</span></h4>
+    <ul>
+      <li><span class="en-content">News</span><span class="ar-content">الأخبار</span></li>
+      <li><span class="en-content">Matches</span><span class="ar-content">المباريات</span></li>
+      <li><span class="en-content">Teams</span><span class="ar-content">الفرق</span></li>
+      <li><span class="en-content">World Cup</span><span class="ar-content">كأس العالم</span></li>
+      <li><span class="en-content">Videos</span><span class="ar-content">الفيديو</span></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4><span class="en-content">ABOUT</span><span class="ar-content">عن روغبا</span></h4>
+    <ul>
+      <li><span class="en-content">About Rugba</span><span class="ar-content">من نحن</span></li>
+      <li><span class="en-content">Advertise</span><span class="ar-content">الإعلانات</span></li>
+      <li><span class="en-content">Contact</span><span class="ar-content">تواصل معنا</span></li>
+      <li><span class="en-content">Privacy Policy</span><span class="ar-content">سياسة الخصوصية</span></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span class="en-content">© 2026 RUGBA.COM — ALL RIGHTS RESERVED</span>
+  <span class="ar-content">جميع الحقوق محفوظة © 2026 روغبا</span>
+</div>
+
+<script>
+  function setLang(lang, btn) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (lang === 'ar') {
+      document.body.classList.add('ar');
+      document.documentElement.lang = 'ar';
+      document.documentElement.dir = 'rtl';
+      document.title = 'روغبا — أخبار الرغبي';
+    } else {
+      document.body.classList.remove('ar');
+      document.documentElement.lang = 'en';
+      document.documentElement.dir = 'ltr';
+      document.title = 'RUGBA — Rugby News';
+    }
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
+</script>
 </body>
 </html>

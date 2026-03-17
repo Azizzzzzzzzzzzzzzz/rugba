@@ -2,7 +2,7 @@
 title: South Africa Dominates World Rugby Rankings in 2026
 title_ar: جنوب أفريقيا تهيمن على تصنيف الرغبي العالمي في 2026
 category: World Rugby
-date: 2026-03-17T02:50:53.053Z
+date: 2026-03-17T02:56:58.360Z
 ---
 South Africa continues to reign supreme in world rugby, maintaining their number one position in the World Rugby rankings with an impressive rating of 94.67 points.
 
